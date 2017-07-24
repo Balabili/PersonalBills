@@ -1,0 +1,30 @@
+{
+  "name": "personalbills",
+  "version": "1.0.0",
+  "description": "私人财务账单",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Balabili/PersonalBills.git"
+  },
+  "author": "xcsun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Balabili/PersonalBills/issues"
+  },
+  "homepage": "https://github.com/Balabili/PersonalBills#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^4.11.4",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.3.0"
+  }
+}
