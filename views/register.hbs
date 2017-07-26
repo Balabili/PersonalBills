@@ -1,0 +1,22 @@
+<div id="register" class="register-container" v-cloak>
+    <div v-if="validationFailedMsg" class="alert alert-danger" role="alert">${validationFailedMsg}</div>
+    <div v-if="registerSuccess" class="alert alert-success" role="alert">${registerSuccess}</div>
+    <div class="form-group">
+        <label for="username">用户名</label>
+        <input type="text" class="form-control" name="username" id="username" placeholder="中文数字字母组成，6-12位">
+    </div>
+    <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" class="form-control" name="password" id="password" placeholder="密码6-12位">
+    </div>
+    <div class="form-group">
+        <label for="password">重复密码</label>
+        <input type="password" class="form-control" name="passwordAgain" id="passwordAgain" placeholder="再次输入密码">
+    </div>
+    <div class="form-group">
+        <label for="email">邮箱</label>
+        <span class="glyphicon glyphicon-question-sign font-blue" title="找回用户名密码需要"></span>
+        <input type="text" class="form-control" name="email" id="email" placeholder="请输入邮箱">
+    </div>
+    <button class="btn btn-primary btn-block" v-on:click="register">注册</button>
+</div>

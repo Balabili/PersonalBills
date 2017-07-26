@@ -4,7 +4,15 @@ html,body {
     height: 100%;
 }
 
-.login-container {
+[v-cloak] {
+  display: none;
+}
+
+label {
+    cursor: pointer;
+}
+
+.login-container,.register-container {
     position: absolute;
     left: 50%;
     top: 50%;

@@ -15,12 +15,17 @@ define(function () {
             }
         });
         return dtd.promise();
-    };
+    },
+        strHelper = {},
+        cookieHelper = {};
 
-    let cookieHelper = {};
+    strHelper.trim = function (str) {
+        return str.replace(/(^\s*)|(\s*$)/g, '');
+    };
 
     return {
         ajax: ajax,
+        strHelper: strHelper,
         cookieHelper: cookieHelper
     };
 });

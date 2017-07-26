@@ -5,14 +5,16 @@ const mongoose = require('../lib/mongo.js'),
 let UserSchema = new Schema({
     name: String,
     password: String,
+    email: String,
     bills: [BillSchema]
 }),
     User = mongoose.model('User', UserSchema);
 
 function AddUser(data) {
     let user = new User({
-        name: data.name,
-        password: data.password
+        name: data.username,
+        password: data.password,
+        email: data.email
     });
     user.save(function (err, res) {
         if (err) {
@@ -23,25 +25,8 @@ function AddUser(data) {
     });
 }
 
-function findUser(data) {
-    let user = new User({
-        name: data.username,
-        password: data.password
-    });
-    return User.find(user, function (err, result) {
-        if (err) {
-            logger.error('findUser Error:' + err);
-        } else {
-            return result;
-        }
-    });
-}
-
-function findUserByName(data) {
-    let user = new User({
-        name: data.username
-    });
-    return User.findOne(user, function (err, res) {
+function findUserByName(name) {
+    return User.findOne({ name: name }, function (err, res) {
         if (err) {
             logger.error('findUserByName Error:' + err);
         } else {
@@ -52,6 +37,5 @@ function findUserByName(data) {
 
 module.exports = {
     AddUser: AddUser,
-    findUser: findUser,
     findUserByName: findUserByName
 };

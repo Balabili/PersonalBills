@@ -1,30 +1,38 @@
-const User = require('../model/user.js');
+const User = require('../model/user.js'),
+    crypto = require('../middlewares/crypto.js');
 module.exports = (app) => {
     app.get('/', (req, res) => {
         res.render('login', { LoginContent: true });
     });
-    app.post('/login', (req, res) => {
-        let username = req.body.username,
-            pwd = req.body.password,
-            rememberMe = Boolean(req.body.rememberMe),
-            usernamePassValidation = /^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(username) && username.length > 7 && username.length < 13;
-        if (!usernamePassValidation) {
-            res.send([false, '用户名不合法']);
+    app.get('/register', (req, res) => {
+        res.render('register', { RegisterContent: true });
+    });
+    app.post('/register', async (req, res) => {
+        let username = req.body.username, password = crypto.md5Crypto(req.body.password), email = req.body.email, data = {},
+            userModel = await User.findUserByName(username);
+        if (userModel !== null) {
+            res.send(false);
             return;
-        } else {
-            let userModel = User.findUserByName({ username: username });
-            if (userModel === null) {
-                res.send(false, '用户名不存在');
-                return;
-            }
-            if (userModel.password !== pwd) {
-                res.send([false, '密码错误']);
-                return;
-            }
+        }
+        data = { username: username, password: password, email: email };
+        User.AddUser(data);
+        res.send(true);
+    });
+    app.post('/login', async (req, res) => {
+        let username = req.body.username,
+            pwd = crypto.md5Crypto(req.body.password),
+            rememberMe = Boolean(req.body.rememberMe),
+            userModel = await User.findUserByName(username);
+        if (userModel === null || userModel.password !== pwd) {
+            res.send('用户名不存在或者密码错误');
+            return;
         }
         if (rememberMe) {
             req.session.user = username;
-            res.render('home');
+            res.send(false);
         }
+    });
+    app.get('/home', (req, res) => {
+        res.render('home', { HomeContent: true });
     });
 };
