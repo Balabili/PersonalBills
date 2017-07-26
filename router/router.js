@@ -1,4 +1,6 @@
 const User = require('../model/user.js'),
+    auth = require('../middlewares/auth.js'),
+    logger = require('../logger/logger.js'),
     crypto = require('../middlewares/crypto.js');
 module.exports = (app) => {
     app.get('/', (req, res) => {
@@ -32,7 +34,17 @@ module.exports = (app) => {
             res.send(false);
         }
     });
-    app.get('/home', (req, res) => {
+    app.get('/logout', (req, res) => {
+        req.session.destroy(function (err) {
+            if (err) {
+                logger.error(`Destroy Session Error: ${err}`);
+            } else {
+                logger.debug('Destroy Session Success.');
+                res.redirect('/');
+            }
+        });
+    });
+    app.get('/home', auth.userRequired, (req, res) => {
         res.render('home', { HomeContent: true });
     });
 };
