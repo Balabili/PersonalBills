@@ -3,8 +3,8 @@ const mongoose = require('../lib/mongo.js'),
     BillSchema = require('./bill.js').BillSchema,
     Schema = mongoose.Schema;
 let UserSchema = new Schema({
-    name: String,
-    password: String,
+    name: { type: String, required: true },
+    password: { type: String, required: true },
     email: String,
     bills: [BillSchema]
 }),
@@ -31,6 +31,16 @@ function findUserByName(name) {
             logger.error('findUserByName Error:' + err);
         } else {
             return res;
+        }
+    });
+}
+
+function changeUserBills(data) {
+    User.findOne({ name: data.name }, (err, res) => {
+        if (err) {
+            logger.error('changeUserBills Error:' + err);
+        } else {
+            
         }
     });
 }

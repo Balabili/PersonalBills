@@ -1,6 +1,7 @@
 const User = require('../model/user.js'),
     auth = require('../middlewares/auth.js'),
     logger = require('../logger/logger.js'),
+    moment = require('moment'),
     crypto = require('../middlewares/crypto.js');
 module.exports = (app) => {
     app.get('/', (req, res) => {
@@ -45,6 +46,23 @@ module.exports = (app) => {
         });
     });
     app.get('/home', auth.userRequired, (req, res) => {
-        res.render('home', { HomeContent: true });
+        let currentDate = moment().format('YYYY-MM-DD');
+        res.render('home', { HomeContent: true, currentDate: currentDate });
+    });
+    app.post('/home/addBill', (req, res) => {
+        let items = req.body.billItems, input = 0, output = 0, data = {}, details = [];
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].isInput) {
+                input += items[i].acount;
+            } else {
+                output += items[i].acount;
+            }
+            details.push({ item: items[i].item, acount: items[i].acount, isInput: items[i].isInput });
+        }
+        data.name = req.session.user;
+        data.inputAmount = input;
+        data.outputAmount = output;
+        data.billDate = moment().format('YYYY-MM-DD');
+        data.billDetails = details;
     });
 };

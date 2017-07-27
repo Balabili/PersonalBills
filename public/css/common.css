@@ -4,6 +4,11 @@ html,body {
     height: 100%;
 }
 
+body {
+    padding-top: 75px;
+    min-width: 1280px;
+}
+
 [v-cloak] {
   display: none;
 }
@@ -12,7 +17,19 @@ label {
     cursor: pointer;
 }
 
-.login-container,.register-container {
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.bgYellow {
+    background-color: #FCF8E3;
+}
+
+.bgGreen {
+    background-color: #DFF0D8;
+}
+
+.login-container, .register-container {
     position: absolute;
     left: 50%;
     top: 50%;
