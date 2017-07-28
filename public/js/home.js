@@ -12,12 +12,25 @@ require(['utility'], function (utility) {
             billItems: [],
             isInput: true
         },
+        mounted: function () {
+            this.getItems();
+        },
         methods: {
+            getItems: function () {
+                let self = this, date = document.getElementById('currentDate').value;
+                utility.ajax('/getBillDetails', 'post', { date: date }).then(function (result) {
+                    if (result) {
+                        self.billItems = result;
+                        app.$set(self, 'billItems', self.billItems);
+                    }
+                });
+            },
             logout: function () {
                 window.location.href = '/logout';
             },
             addBill: function (isInput) {
                 this.isInput = isInput;
+                this.modalTitle = isInput ? '收入' : '支出';
                 $('#myModal').modal('show');
             },
             saveItem: function () {
@@ -38,7 +51,7 @@ require(['utility'], function (utility) {
                 billItem.value = ''; acount.value = '';
             },
             saveBill: function () {
-                utility.ajax('/home/addBill', 'post', { billItems: this.billItems }).then(function (result) {
+                utility.ajax('/home/addBill', 'post', { currentDate: '2017-7-28', billItems: this.billItems }).then(function (result) {
                     debugger;
                 }).fail(function (err) { console.log(err); });
             }

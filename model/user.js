@@ -40,12 +40,48 @@ function changeUserBills(data) {
         if (err) {
             logger.error('changeUserBills Error:' + err);
         } else {
-            
+            let bills = res.bills, existBill = false;
+            for (let i = 0; i < bills.length; i++) {
+                if (bills[i].billDate === data.billDate) {
+                    existBill = true;
+                    res.bills[i].inputAmount = data.inputAmount;
+                    res.bills[i].outputAmount = data.outputAmount;
+                    res.bills[i].billDetails = data.billDetails;
+                    break;
+                }
+            }
+            if (!existBill) {
+                res.bills.push(data);
+            }
+            res.save((error) => {
+                if (error) {
+                    logger.error('changeUserBills Error:' + err);
+                } else {
+                    logger.info('changeUserBills ' + data.name + ' successful.');
+                }
+            });
+        }
+    });
+}
+
+function getBillDetailsByUsernameAndDate(name, date) {
+    return User.findOne({ name: name }, function (err, res) {
+        if (err) {
+            logger.error('getBillDetailsByUsername Error:' + err);
+        } else {
+            let bills = res.bills;
+            for (let i = 0; i < bills.length; i++) {
+                if (bills[i].billDate === date) {
+                    return bills[i].billDetails;
+                }
+            }
         }
     });
 }
 
 module.exports = {
     AddUser: AddUser,
-    findUserByName: findUserByName
+    findUserByName: findUserByName,
+    changeUserBills: changeUserBills,
+    getBillDetailsByUsername: getBillDetailsByUsername
 };

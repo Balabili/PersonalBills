@@ -45,17 +45,21 @@ module.exports = (app) => {
             }
         });
     });
-    app.get('/home', auth.userRequired, (req, res) => {
-        let currentDate = moment().format('YYYY-MM-DD');
-        res.render('home', { HomeContent: true, currentDate: currentDate });
+    app.get('/home/billDetails', auth.userRequired, (req, res) => {
+        let billDate = req.URLSearchParams.billDate ? req.URLSearchParams.billDate : moment().format('YYYY-MM-DD');
+        res.render('home', { HomeContent: true, currentDate: billDate });
     });
-    app.post('/home/addBill', (req, res) => {
+    app.post('/getBillDetails', async (req, res) => {
+        let currentDate = req.body.date, billDetails = await User.getBillDetailsByUsernameAndDate(req.session.user, currentDate);
+        return res.send(billDetails);
+    });
+    app.post('/home/addBill', async (req, res) => {
         let items = req.body.billItems, input = 0, output = 0, data = {}, details = [];
         for (let i = 0; i < items.length; i++) {
-            if (items[i].isInput) {
-                input += items[i].acount;
+            if (items[i].isInput === 'true') {
+                input += Number.parseFloat(items[i].acount);
             } else {
-                output += items[i].acount;
+                output += Number.parseFloat(items[i].acount);
             }
             details.push({ item: items[i].item, acount: items[i].acount, isInput: items[i].isInput });
         }
@@ -64,5 +68,6 @@ module.exports = (app) => {
         data.outputAmount = output;
         data.billDate = moment().format('YYYY-MM-DD');
         data.billDetails = details;
+        await User.changeUserBills(data);
     });
 };

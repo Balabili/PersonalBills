@@ -17,15 +17,24 @@ define(function () {
         return dtd.promise();
     },
         strHelper = {},
-        cookieHelper = {};
+        dateHelper = {};
 
     strHelper.trim = function (str) {
         return str.replace(/(^\s*)|(\s*$)/g, '');
     };
 
+    function completionNumber(number) {
+        return number < 10 ? '0' + number : number;
+    }
+
+    dateHelper.formatDate = function (date) {
+        let year = date.getFullYear(), month = completionNumber(date.getMonth() + 1), day = date.getDate();
+        return `${year}-${month}-${day}`;
+    };
+
     return {
         ajax: ajax,
         strHelper: strHelper,
-        cookieHelper: cookieHelper
+        dateHelper: dateHelper
     };
 });
