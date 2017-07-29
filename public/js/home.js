@@ -6,7 +6,8 @@ require(['utility'], function (utility) {
         el: '#home',
         delimiters: ['${', '}'],
         data: {
-            isAddBills: true,
+            isOverview: true,
+            isAddBills: false,
             modalTitle: '支出',
             showNoItemMsg: true,
             billItems: [],
@@ -19,8 +20,8 @@ require(['utility'], function (utility) {
             getItems: function () {
                 let self = this, date = document.getElementById('currentDate').value;
                 utility.ajax('/getBillDetails', 'post', { date: date }).then(function (result) {
-                    if (result) {
-                        self.billItems = result;
+                    if (result.bills.length) {
+                        self.billItems = result.bills;
                         app.$set(self, 'billItems', self.billItems);
                     }
                 });

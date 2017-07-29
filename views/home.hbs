@@ -7,9 +7,9 @@
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-7">
                 <ul class="nav navbar-nav">
-                    <li><a href="javascript:void(0);">收支总览</a></li>
+                    <li class="active"><a href="javascript:void(0);">收支总览</a></li>
                     <li><a href="javascript:void(0);">收支详情</a></li>
-                    <li class="active"><a href="javascript:void(0);">添加账单</a></li>
+                    <li><a href="javascript:void(0);">添加账单</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -24,6 +24,29 @@
     </nav>
 
     <div class="row">
+        <div v-if="isOverview" class="overview-content col-md-8 col-md-offset-2">
+            <h2 style="text-align:center;">总账单</h2>
+            <ul class="list-group">
+                <li class="list-group-item row">
+                    <span class="col-md-2">月份</span>
+                    <span class="col-md-3">收入</span>
+                    <span class="col-md-3">支出</span>
+                    <span class="col-md-3">总计</span>
+                    <span class="col-md-1">详情</span>
+                </li>
+                <li v-for="billItem in billItems" class="list-group-item row" :class="{bgYellow:!billItem.isInput,bgGreen:billItem.isInput}">
+                    <span class="col-md-1">${billItem.text}</span>
+                    <span class="col-md-6">${billItem.item}</span>
+                    <span class="col-md-3">${billItem.acount}</span>
+                    <span class="glyphicon glyphicon-pencil col-md-1 cursor-pointer" style="color:#3F9F00;" title="编辑"></span>
+                    <span class="glyphicon glyphicon-remove col-md-1 cursor-pointer" style="color:red;" title="删除"></span>
+                </li>
+                <li v-if="showNoItemMsg" class="list-group-item row">
+                    <span style="display:block;text-align:center;">还没有记录</span>
+                </li>
+            </ul>
+        </div>
+
         <div v-if="isAddBills" class="add-bill-content col-md-8 col-md-offset-2">
             <h2 style="text-align:center;">{{currentDate}}账单</h2>
             <ul class="list-group">

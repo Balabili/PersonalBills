@@ -64,8 +64,19 @@ function changeUserBills(data) {
     });
 }
 
+function getAllBillsByUsername(name) {
+    return User.findOne({ name: name }, (err, res) => {
+        if (err) {
+            logger.error('getAllBillsByUsername Error:' + err);
+            return [];
+        } else {
+            return res.bills;
+        }
+    });
+}
+
 function getBillDetailsByUsernameAndDate(name, date) {
-    return User.findOne({ name: name }, function (err, res) {
+    return User.findOne({ name: name }, (err, res) => {
         if (err) {
             logger.error('getBillDetailsByUsername Error:' + err);
         } else {
@@ -75,6 +86,7 @@ function getBillDetailsByUsernameAndDate(name, date) {
                     return bills[i].billDetails;
                 }
             }
+            return [];
         }
     });
 }
@@ -83,5 +95,6 @@ module.exports = {
     AddUser: AddUser,
     findUserByName: findUserByName,
     changeUserBills: changeUserBills,
-    getBillDetailsByUsername: getBillDetailsByUsername
+    getAllBillsByUsername: getAllBillsByUsername,
+    getBillDetailsByUsernameAndDate: getBillDetailsByUsernameAndDate
 };

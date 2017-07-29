@@ -45,8 +45,11 @@ module.exports = (app) => {
             }
         });
     });
-    app.get('/home/billDetails', auth.userRequired, (req, res) => {
-        let billDate = req.URLSearchParams.billDate ? req.URLSearchParams.billDate : moment().format('YYYY-MM-DD');
+    app.get('/home', async (req, res) => {
+        let bills = await User.getAllBillsByUsername(req.session.user);
+    });
+    app.get('/home/billDetails/:billDate?', auth.userRequired, (req, res) => {
+        let billDate = req.params.billDate ? req.params.billDate : moment().format('YYYY-MM-DD');
         res.render('home', { HomeContent: true, currentDate: billDate });
     });
     app.post('/getBillDetails', async (req, res) => {
