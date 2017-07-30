@@ -10,6 +10,7 @@ require(['utility'], function (utility) {
             isAddBills: false,
             modalTitle: '支出',
             showNoItemMsg: true,
+            billOverview: [],
             billItems: [],
             isInput: true
         },
@@ -18,13 +19,20 @@ require(['utility'], function (utility) {
         },
         methods: {
             getItems: function () {
-                let self = this, date = document.getElementById('currentDate').value;
-                utility.ajax('/getBillDetails', 'post', { date: date }).then(function (result) {
+                utility.ajax('/getBillOverviews', 'post', {}).then(function (result) {
                     if (result.bills.length) {
                         self.billItems = result.bills;
                         app.$set(self, 'billItems', self.billItems);
                     }
                 });
+                return;
+                // let self = this, date = document.getElementById('currentDate').value;
+                // utility.ajax('/getBillDetails', 'post', { date: date }).then(function (result) {
+                //     if (result.bills.length) {
+                //         self.billItems = result.bills;
+                //         app.$set(self, 'billItems', self.billItems);
+                //     }
+                // });
             },
             logout: function () {
                 window.location.href = '/logout';

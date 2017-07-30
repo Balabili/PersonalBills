@@ -1,13 +1,31 @@
 const mongoose = require('../lib/mongo.js'),
     logger = require('../logger/logger.js'),
-    BillSchema = require('./bill.js').BillSchema,
+    userService = require('./userService.js'),
     Schema = mongoose.Schema;
-let UserSchema = new Schema({
-    name: { type: String, required: true },
-    password: { type: String, required: true },
-    email: String,
-    bills: [BillSchema]
+let ItemSchema = new Schema({
+    item: { type: String, required: true },
+    acount: { type: String, required: true },
+    isInput: { type: Boolean, required: true }
 }),
+    BillSchema = new Schema({
+        billDetails: [ItemSchema],
+        inputAmount: Number,
+        outputAmount: Number,
+        billDate: String
+    }),
+    MonthBillSchema = new Schema({
+        billDetails: [ItemSchema],
+        inputAmount: Number,
+        outputAmount: Number,
+        billMonth: String
+    }),
+    UserSchema = new Schema({
+        name: { type: String, required: true },
+        password: { type: String, required: true },
+        email: String,
+        monthBills: [MonthBillSchema],
+        bills: [BillSchema]
+    }),
     User = mongoose.model('User', UserSchema);
 
 function AddUser(data) {
@@ -47,11 +65,13 @@ function changeUserBills(data) {
                     res.bills[i].inputAmount = data.inputAmount;
                     res.bills[i].outputAmount = data.outputAmount;
                     res.bills[i].billDetails = data.billDetails;
+                    userService.changeMonthBills(res, data, true, i);
                     break;
                 }
             }
             if (!existBill) {
                 res.bills.push(data);
+                userService.changeMonthBills(res, data, false);
             }
             res.save((error) => {
                 if (error) {

@@ -46,7 +46,14 @@ module.exports = (app) => {
         });
     });
     app.get('/home', async (req, res) => {
-        let bills = await User.getAllBillsByUsername(req.session.user);
+        res.render('home', { HomeContent: true });
+    });
+    app.post('/home/getBillOverviews', async (req, res) => {
+        let bills = await User.getAllBillsByUsername(req.session.user), overviewItems = [];
+        for (let i = 0; i < bills.length; i++) {
+            let monthBill = {};
+        }
+        return res.send(overviewItems);
     });
     app.get('/home/billDetails/:billDate?', auth.userRequired, (req, res) => {
         let billDate = req.params.billDate ? req.params.billDate : moment().format('YYYY-MM-DD');
