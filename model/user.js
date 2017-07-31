@@ -1,6 +1,6 @@
 const mongoose = require('../lib/mongo.js'),
     logger = require('../logger/logger.js'),
-    userService = require('./userService.js'),
+    userService = require('../service/userService.js'),
     Schema = mongoose.Schema;
 let ItemSchema = new Schema({
     item: { type: String, required: true },
@@ -14,17 +14,14 @@ let ItemSchema = new Schema({
         billDate: String
     }),
     MonthBillSchema = new Schema({
-        billDetails: [ItemSchema],
-        inputAmount: Number,
-        outputAmount: Number,
+        Daybills: [BillSchema],
         billMonth: String
     }),
     UserSchema = new Schema({
         name: { type: String, required: true },
         password: { type: String, required: true },
         email: String,
-        monthBills: [MonthBillSchema],
-        bills: [BillSchema]
+        monthBills: [MonthBillSchema]
     }),
     User = mongoose.model('User', UserSchema);
 
@@ -46,7 +43,7 @@ function AddUser(data) {
 function findUserByName(name) {
     return User.findOne({ name: name }, function (err, res) {
         if (err) {
-            logger.error('findUserByName Error:' + err);
+            logger.error(`findUserByName Error: ${err}`);
         } else {
             return res;
         }
@@ -58,24 +55,10 @@ function changeUserBills(data) {
         if (err) {
             logger.error('changeUserBills Error:' + err);
         } else {
-            let bills = res.bills, existBill = false;
-            for (let i = 0; i < bills.length; i++) {
-                if (bills[i].billDate === data.billDate) {
-                    existBill = true;
-                    res.bills[i].inputAmount = data.inputAmount;
-                    res.bills[i].outputAmount = data.outputAmount;
-                    res.bills[i].billDetails = data.billDetails;
-                    userService.changeMonthBills(res, data, true, i);
-                    break;
-                }
-            }
-            if (!existBill) {
-                res.bills.push(data);
-                userService.changeMonthBills(res, data, false);
-            }
+            userService.changeUserBills(res, data);
             res.save((error) => {
                 if (error) {
-                    logger.error('changeUserBills Error:' + err);
+                    logger.error(`changeUserBills Error: ${err}`);
                 } else {
                     logger.info('changeUserBills ' + data.name + ' successful.');
                 }
@@ -84,13 +67,12 @@ function changeUserBills(data) {
     });
 }
 
-function getAllBillsByUsername(name) {
+function getMonthBillsByUsername(name) {
     return User.findOne({ name: name }, (err, res) => {
         if (err) {
-            logger.error('getAllBillsByUsername Error:' + err);
-            return [];
+            logger.error(`getAllBillsByUsername Error:  ${err}`);
         } else {
-            return res.bills;
+            logger.info('getAllBillsByUsername successful.');
         }
     });
 }
@@ -115,6 +97,6 @@ module.exports = {
     AddUser: AddUser,
     findUserByName: findUserByName,
     changeUserBills: changeUserBills,
-    getAllBillsByUsername: getAllBillsByUsername,
+    getMonthBillsByUsername: getMonthBillsByUsername,
     getBillDetailsByUsernameAndDate: getBillDetailsByUsernameAndDate
 };

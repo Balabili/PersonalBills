@@ -49,11 +49,19 @@ module.exports = (app) => {
         res.render('home', { HomeContent: true });
     });
     app.post('/home/getBillOverviews', async (req, res) => {
-        let bills = await User.getAllBillsByUsername(req.session.user), overviewItems = [];
-        for (let i = 0; i < bills.length; i++) {
-            let monthBill = {};
+        let currentUser = await User.getMonthBillsByUsername(req.session.user),
+            monthBills = currentUser.monthBills;
+        monthBills.sort(function (a, b) { return a.date > b.date ? -1 : 1; });
+        return res.send(monthBills);
+    });
+    app.post('/home/getMonthBillDetails', async (req, res) => {
+        let currentUser = await User.getMonthBillsByUsername(req.session.user),
+            month = req.body.month, monthBills = currentUser.monthBills;
+        for (let i = 0; i < monthBills.length; i++) {
+            if (monthBills[i].billMonth === month) {
+                return res.send(monthBills[i].Daybills);
+            }
         }
-        return res.send(overviewItems);
     });
     app.get('/home/billDetails/:billDate?', auth.userRequired, (req, res) => {
         let billDate = req.params.billDate ? req.params.billDate : moment().format('YYYY-MM-DD');

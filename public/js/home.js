@@ -7,32 +7,57 @@ require(['utility'], function (utility) {
         delimiters: ['${', '}'],
         data: {
             isOverview: true,
+            isMonthDetails: false,
             isAddBills: false,
             modalTitle: '支出',
             showNoItemMsg: true,
-            billOverview: [],
+            monthBillItems: [],
+            dayBillItems: [],
             billItems: [],
             isInput: true
+        },
+        created: function () {
+
         },
         mounted: function () {
             this.getItems();
         },
         methods: {
             getItems: function () {
-                utility.ajax('/getBillOverviews', 'post', {}).then(function (result) {
-                    if (result.bills.length) {
-                        self.billItems = result.bills;
-                        app.$set(self, 'billItems', self.billItems);
+                let self = this;
+                utility.ajax('/home/getBillOverviews', 'post', {}).then(function (result) {
+                    if (result.length) {
+                        for (let i = 0; i < result.length; i++) {
+                            let monthItem = {}, items = result[i].Daybills, inputAmount = 0, outputAmount = 0;
+                            monthItem.billMonth = result[i].billMonth;
+                            for (let j = 0; j < items.length; j++) {
+                                inputAmount += items[j].inputAmount;
+                                outputAmount += items[j].outputAmount;
+                            }
+                            monthItem.inputAmount = inputAmount;
+                            monthItem.outputAmount = outputAmount;
+                            monthItem.overviewAmount = inputAmount - outputAmount;
+                            self.monthBillItems.push(monthItem);
+                        }
+                        app.$set(self, 'billItems', self.monthBillItems);
                     }
                 });
-                return;
-                // let self = this, date = document.getElementById('currentDate').value;
-                // utility.ajax('/getBillDetails', 'post', { date: date }).then(function (result) {
-                //     if (result.bills.length) {
-                //         self.billItems = result.bills;
-                //         app.$set(self, 'billItems', self.billItems);
-                //     }
-                // });
+            },
+            viewMonthBillDetails: function (e) {
+                e.stopPropagation();
+                let self = this, month = e.target.id;
+                self.isMonthDetails = true;
+                self.isOverview = false;
+                self.isAddBills = false;
+                utility.ajax('/home/getMonthBillDetails', 'post', { month: month }).then(function (result) {
+                    if (result && result.length) {
+                        for (let i = 0; i < result.length; i++) {
+                            result[i].overviewAmount = result[i].inputAmount - result[i].outputAmount;
+                        }
+                        self.dayBillItems = result;
+                        app.$set(self, 'billItems', self.dayBillItems);
+                    }
+                }).fail(function (err) { console.log(err); });
             },
             logout: function () {
                 window.location.href = '/logout';

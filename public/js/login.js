@@ -30,7 +30,7 @@ require(['utility'], function (utility) {
                     if (result) {
                         self.errorMessage = result;
                     } else {
-                        window.location.href = '/home/billDetails';
+                        window.location.href = '/home';
                     }
                 }).fail(function (err) { console.log(err); });
             },
