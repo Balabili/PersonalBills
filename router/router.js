@@ -49,13 +49,13 @@ module.exports = (app) => {
         res.render('home', { HomeContent: true });
     });
     app.post('/home/getBillOverviews', async (req, res) => {
-        let currentUser = await User.getMonthBillsByUsername(req.session.user),
+        let currentUser = await User.findUserByName(req.session.user),
             monthBills = currentUser.monthBills;
         monthBills.sort(function (a, b) { return a.date > b.date ? -1 : 1; });
         return res.send(monthBills);
     });
     app.post('/home/getMonthBillDetails', async (req, res) => {
-        let currentUser = await User.getMonthBillsByUsername(req.session.user),
+        let currentUser = await User.findUserByName(req.session.user),
             month = req.body.month, monthBills = currentUser.monthBills;
         for (let i = 0; i < monthBills.length; i++) {
             if (monthBills[i].billMonth === month) {
@@ -67,9 +67,21 @@ module.exports = (app) => {
         let billDate = req.params.billDate ? req.params.billDate : moment().format('YYYY-MM-DD');
         res.render('home', { HomeContent: true, currentDate: billDate });
     });
-    app.post('/getBillDetails', async (req, res) => {
-        let currentDate = req.body.date, billDetails = await User.getBillDetailsByUsernameAndDate(req.session.user, currentDate);
-        return res.send(billDetails);
+    app.post('/home/getBillDetails', async (req, res) => {
+        let date = req.body.date, currentUser = await User.findUserByName(req.session.user),
+            monthBills = currentUser.monthBills;
+        for (let i = 0; i < monthBills.length; i++) {
+            if (monthBills[i].billMonth === date.substring(0, 7)) {
+                let daybills = monthBills[i].Daybills;
+                for (let j = 0; j < daybills.length; j++) {
+                    if (daybills[j].billDate === date) {
+                        return res.send(daybills[j].billDetails);
+                    }
+                }
+                break;
+            }
+        }
+        return res.send(null);
     });
     app.post('/home/addBill', async (req, res) => {
         let items = req.body.billItems, input = 0, output = 0, data = {}, details = [];
@@ -87,5 +99,6 @@ module.exports = (app) => {
         data.billDate = moment().format('YYYY-MM-DD');
         data.billDetails = details;
         await User.changeUserBills(data);
+        return res.send(true);
     });
 };

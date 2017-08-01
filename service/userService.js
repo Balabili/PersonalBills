@@ -9,6 +9,7 @@ function changeUserBills(res, data) {
                     existDayBills = true;
                     res.monthBills[i].Daybills[j].inputAmount = data.inputAmount;
                     res.monthBills[i].Daybills[j].outputAmount = data.outputAmount;
+                    res.monthBills[i].Daybills[j].billDetails = data.billDetails;
                     break;
                 }
             }

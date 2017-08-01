@@ -45,7 +45,7 @@ function findUserByName(name) {
         if (err) {
             logger.error(`findUserByName Error: ${err}`);
         } else {
-            return res;
+            logger.error('findUserByName successful.');
         }
     });
 }

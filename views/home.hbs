@@ -7,9 +7,9 @@
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-7">
                 <ul id="mytabs" class="nav navbar-nav">
-                    <li class="active"><a href="" role="tab" data-toggle="tab" @click="">收支总览</a></li>
-                    <li><a href="" role="tab" data-toggle="tab" @click="">收支详情</a></li>
-                    <li><a href="" role="tab" data-toggle="tab" @click="">添加账单</a></li>
+                    <li class="active"><a href="" role="tab" data-toggle="tab" @click="changeTab(1)">收支总览</a></li>
+                    <li><a id="monthDetails" href="" role="tab" data-toggle="tab" @click="changeTab(2)">收支详情</a></li>
+                    <li><a id="dateDetails" href="" role="tab" data-toggle="tab" @click="changeTab(3)">添加账单</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -24,7 +24,7 @@
     </nav>
 
     <div class="row">
-        <div v-if="isOverview" class="overview-content col-md-8 col-md-offset-2">
+        <div v-if="tabIndex===1" class="overview-content col-md-8 col-md-offset-2">
             <h2 style="text-align:center;">总账单</h2>
             <ul class="list-group">
                 <li class="list-group-item row">
@@ -48,8 +48,8 @@
             </ul>
         </div>
 
-        <div v-if="isMonthDetails" class="month-bill-content col-md-8 col-md-offset-2">
-            <h2 style="text-align:center;">月账单</h2>
+        <div v-if="tabIndex===2" class="month-bill-content col-md-8 col-md-offset-2">
+            <h2 style="text-align:center;">${currentDate}月账单</h2>
             <input class="form-control" type="text" name="month" id="month" />
             <button class="btn btn-primary btn-block" style="margin-top:10px;" v-on:click="findDayBills">查询</button>
             <ul class="list-group" style="margin-top:10px;">
@@ -65,7 +65,8 @@
                     <span class="col-md-3">${dayBillItem.inputAmount}</span>
                     <span class="col-md-3">${dayBillItem.outputAmount}</span>
                     <span class="col-md-3">${dayBillItem.overviewAmount}</span>
-                    <span class="glyphicon glyphicon-eye-open col-md-1 cursor-pointer" style="color:#3F9F00;" @click="viewMonthBillDetails" title="查看详情"></span>
+                    <span class="glyphicon glyphicon-eye-open col-md-1 cursor-pointer" style="color:#3F9F00;" v-bind="{id:dayBillItem.billDate}"
+                        @click="viewDayBillDetails" title="查看详情"></span>
                 </li>
                 <li v-if="showNoItemMsg" class="list-group-item row">
                     <span style="display:block;text-align:center;">还没有记录</span>
@@ -73,21 +74,23 @@
             </ul>
         </div>
 
-        <div v-if="isAddBills" class="add-bill-content col-md-8 col-md-offset-2">
-            <h2 style="text-align:center;">{{currentDate}}账单</h2>
-            <ul class="list-group">
+        <div v-if="tabIndex===3" class="add-bill-content col-md-8 col-md-offset-2">
+            <h2 style="text-align:center;">${currentDate}账单</h2>
+            <input class="form-control" type="text" name="date" id="date" />
+            <button class="btn btn-primary btn-block" style="margin-top:10px;" v-on:click="findBillDetails">查询</button>
+            <ul class="list-group" style="margin-top:10px;">
                 <li class="list-group-item row">
                     <span class="col-md-1"></span>
                     <span class="col-md-6">条目</span>
                     <span class="col-md-3">金额</span>
                     <span class="col-md-2">操作</span>
                 </li>
-                <li v-for="billItem in billItems" class="list-group-item row" :class="{bgYellow:!billItem.isInput,bgGreen:billItem.isInput}">
+                <li v-for="billItem in billItems" v-bind="{id:billItem._id}" class="list-group-item row" :class="{bgYellow:!billItem.isInput,bgGreen:billItem.isInput}">
                     <span class="col-md-1">${billItem.text}</span>
                     <span class="col-md-6">${billItem.item}</span>
                     <span class="col-md-3">${billItem.acount}</span>
-                    <span class="glyphicon glyphicon-pencil col-md-1 cursor-pointer" style="color:#3F9F00;" title="编辑"></span>
-                    <span class="glyphicon glyphicon-remove col-md-1 cursor-pointer" style="color:red;" title="删除"></span>
+                    <span class="glyphicon glyphicon-pencil col-md-1 cursor-pointer" style="color:#3F9F00;" title="编辑" @click="editBillItem"></span>
+                    <span class="glyphicon glyphicon-remove col-md-1 cursor-pointer" style="color:red;" title="删除" @click="deleteBillItem"></span>
                 </li>
                 <li v-if="showNoItemMsg" class="list-group-item row">
                     <span style="display:block;text-align:center;">还没有记录</span>
