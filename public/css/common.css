@@ -38,3 +38,23 @@ label {
     height: 300px;
     width: 300px;
 }
+
+/* canlendar */
+
+.bill-canlendar-title {
+    display: block;
+    height: 35px;
+    line-height: 35px;
+    font-size: 24px;
+    text-align: center;
+}
+.bill-canlendar-cell {
+    cursor: pointer;
+    height: 30px;
+    margin-bottom: 10px;
+    line-height: 30px;
+    text-align: center;
+}
+.bill-canlendar-cell-selected {
+    background-color: lightblue;
+}

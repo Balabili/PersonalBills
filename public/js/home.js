@@ -1,7 +1,7 @@
 requirejs.config({
     baseUrl: '/js/common'
 });
-require(['utility'], function (utility) {
+require(['utility', 'canlendar'], function (utility, canlendar) {
     let app = new Vue({
         el: '#home',
         delimiters: ['${', '}'],
@@ -13,7 +13,10 @@ require(['utility'], function (utility) {
             dayBillItems: [],
             billItems: [],
             currentDate: null,
-            isInput: true
+            isInput: true,
+            title: '2017年',
+            test: '2017-08-01',
+            months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         },
         mounted: function () {
             this.getItems();
@@ -168,7 +171,7 @@ require(['utility'], function (utility) {
             },
             dayBillItems: function () {
                 this.showNoItemMsg = this.dayBillItems.length === 0;
-            }, 
+            },
             billItems: function () {
                 this.showNoItemMsg = this.billItems.length === 0;
             }

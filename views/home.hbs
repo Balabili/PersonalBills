@@ -23,6 +23,7 @@
         </div>
     </nav>
 
+
     <div class="row">
         <div v-if="tabIndex===1" class="overview-content col-md-8 col-md-offset-2">
             <h2 style="text-align:center;">总账单</h2>
@@ -49,7 +50,7 @@
         </div>
 
         <div v-if="tabIndex===2" class="month-bill-content col-md-8 col-md-offset-2">
-            <h2 style="text-align:center;">${currentDate}月账单</h2>
+            <bill-canlendar :is-month="true" :bill-date="currentDate"></bill-canlendar>
             <input class="form-control" type="text" name="month" id="month" />
             <button class="btn btn-primary btn-block" style="margin-top:10px;" v-on:click="findDayBills">查询</button>
             <ul class="list-group" style="margin-top:10px;">
@@ -75,7 +76,7 @@
         </div>
 
         <div v-if="tabIndex===3" class="add-bill-content col-md-8 col-md-offset-2">
-            <h2 style="text-align:center;">${currentDate}账单</h2>
+            <bill-canlendar :is-month="false" :bill-date="currentDate"></bill-canlendar>
             <input class="form-control" type="text" name="date" id="date" />
             <button class="btn btn-primary btn-block" style="margin-top:10px;" v-on:click="findBillDetails">查询</button>
             <ul class="list-group" style="margin-top:10px;">
