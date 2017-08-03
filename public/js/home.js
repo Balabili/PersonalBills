@@ -15,7 +15,6 @@ require(['utility', 'canlendar'], function (utility, canlendar) {
             currentDate: null,
             isInput: true,
             title: '2017年',
-            test: '2017-08-01',
             months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         },
         mounted: function () {
@@ -74,6 +73,8 @@ require(['utility', 'canlendar'], function (utility, canlendar) {
                         }
                         self.dayBillItems = result;
                         app.$set(self, 'dayBillItems', self.dayBillItems);
+                    } else {
+                        self.dayBillItems = [];
                     }
                 }).fail(function (err) { console.log(err); });
             },
@@ -88,6 +89,8 @@ require(['utility', 'canlendar'], function (utility, canlendar) {
                             result[i].text = result[i].isInput ? '收入' : '支出';
                         }
                         self.billItems = result;
+                    } else {
+                        self.billItems = [];
                     }
                 }).fail(function (err) { console.log(err); });
             },
@@ -101,13 +104,11 @@ require(['utility', 'canlendar'], function (utility, canlendar) {
                 let date = e.target.id;
                 this.getDayBillDetails(date);
             },
-            findDayBills: function () {
-                let month = document.getElementById('month').value;
-                this.getMonthDetail(month);
+            getCurrentMonthBills: function (thisMonth) {
+                this.getMonthDetail(thisMonth);
             },
-            findBillDetails: function () {
-                let date = document.getElementById('date').value;
-                this.getDayBillDetails(date);
+            getCurrentDayBills: function (thisDate) {
+                this.getDayBillDetails(thisDate);
             },
             addBill: function (isInput) {
                 this.isInput = isInput;
@@ -132,8 +133,8 @@ require(['utility', 'canlendar'], function (utility, canlendar) {
                 billItem.value = ''; acount.value = '';
             },
             saveBill: function () {
-                utility.ajax('/home/addBill', 'post', { currentDate: '2017-7-28', billItems: this.billItems }).then(function (result) {
-                    debugger;
+                utility.ajax('/home/addBill', 'post', { billItems: this.billItems }).then(function () {
+                    alert('保存成功');
                 }).fail(function (err) { console.log(err); });
             },
             editBillItem: function (e) {

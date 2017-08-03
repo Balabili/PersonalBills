@@ -45,7 +45,7 @@ function findUserByName(name) {
         if (err) {
             logger.error(`findUserByName Error: ${err}`);
         } else {
-            logger.error('findUserByName successful.');
+            logger.info('findUserByName successful.');
         }
     });
 }
@@ -67,36 +67,8 @@ function changeUserBills(data) {
     });
 }
 
-function getMonthBillsByUsername(name) {
-    return User.findOne({ name: name }, (err, res) => {
-        if (err) {
-            logger.error(`getAllBillsByUsername Error:  ${err}`);
-        } else {
-            logger.info('getAllBillsByUsername successful.');
-        }
-    });
-}
-
-function getBillDetailsByUsernameAndDate(name, date) {
-    return User.findOne({ name: name }, (err, res) => {
-        if (err) {
-            logger.error('getBillDetailsByUsername Error:' + err);
-        } else {
-            let bills = res.bills;
-            for (let i = 0; i < bills.length; i++) {
-                if (bills[i].billDate === date) {
-                    return bills[i].billDetails;
-                }
-            }
-            return [];
-        }
-    });
-}
-
 module.exports = {
     AddUser: AddUser,
     findUserByName: findUserByName,
-    changeUserBills: changeUserBills,
-    getMonthBillsByUsername: getMonthBillsByUsername,
-    getBillDetailsByUsernameAndDate: getBillDetailsByUsernameAndDate
+    changeUserBills: changeUserBills
 };

@@ -1,9 +1,17 @@
 Vue.component('bill-canlendar', {
-    template: `<div>
-                <b class="col-md-12 bill-canlendar-title">{{title}}</b>
-                <div>
+    template: `<div class="row">
+                <div v-if="showSelectedForm" class="row">
+                    <div class="form-group col-md-3 col-md-offset-3">
+                        <input type="number" class="form-control" id="selectYear" @blur="selectYearDone" placeholder="年">
+                    </div>
+                    <div v-if="!isMonth" class="form-group col-md-3">
+                        <input type="number" class="form-control" id="selectMonth" @blur="selectMonthDone" placeholder="月">
+                    </div>
+                </div>
+                <b v-else class="col-md-12 bill-canlendar-title" @click="showSelectedFormFun(true)">{{title}}</b>
+                <div style="margin-top:5px;" class="row">
                     <span class="col-md-1 bill-canlendar-cell" @click="before"><</span>
-                    <span class="col-md-1 bill-canlendar-cell" v-bind="{id:list}" :class="{'bill-canlendar-cell-selected':thisMonthOrDate==list}" v-for="list in lists">{{list}}</span>
+                    <span class="col-md-1 bill-canlendar-cell" v-bind="{id:list}" @click="changeCanlendar" :class="{'bill-canlendar-cell-selected':thisMonthOrDate==list}" v-for="list in lists">{{list}}</span>
                     <span class="col-md-1 bill-canlendar-cell" @click="next">></span>
                 </div>
             </div>`,
@@ -13,12 +21,52 @@ Vue.component('bill-canlendar', {
     },
     data: function () {
         return {
+            showSelectedForm: false,
             lists: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             monthDayCounts: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
-            currentDay: ''
+            currentDay: '',
+            hasChangeCanlendar: false,
+            changeCanlendarDate: ''
         };
     },
     methods: {
+        showSelectedFormFun: function (isShow) {
+            let self = this, doc = document, timer = setInterval(function () {
+                if (self.isMonth) {
+                    let yearBox = doc.getElementById('selectYear');
+                    if (yearBox) {
+                        yearBox.focus();
+                        yearBox.value = self.currentDay.split('-')[0];
+                        clearInterval(timer);
+                    }
+                } else {
+                    let yearBox = doc.getElementById('selectYear'), monthBox = doc.getElementById('selectMonth');
+                    if (monthBox) {
+                        yearBox.focus();
+                        yearBox.value = self.currentDay.split('-')[0];
+                        monthBox.value = self.currentDay.split('-')[1];
+                        clearInterval(timer);
+                    }
+                }
+            }, 100);
+            self.showSelectedForm = isShow;
+        },
+        selectYearDone: function () {
+            let self = this;
+            if (self.isMonth) {
+                self.showSelectedForm = false;
+                self.currentDay = document.getElementById('selectYear').value.toString();
+            } else {
+                document.getElementById('selectMonth').focus();
+            }
+        },
+        selectMonthDone: function () {
+            let month = document.getElementById('selectMonth').value;
+            month = month < 10 ? `0${month}` : month;
+            this.currentDay = `${document.getElementById('selectYear').value}-${month}`;
+            this.showSelectedForm = false;
+            this.lists =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        },
         before: function () {
             if (this.isMonth) {
                 if (this.lists[0] === 1) {
@@ -65,6 +113,13 @@ Vue.component('bill-canlendar', {
                 this.lists = list;
             }
         },
+        changeCanlendar: function (e) {
+            let day = e.target.id < 10 ? `0${e.target.id}` : e.target.id,
+                date = this.isMonth ? `${this.currentDay.substring(0, 4)}-${day}` : `${this.currentDay.substring(0, 7)}-${day}`;
+            this.hasChangeCanlendar = true;
+            this.changeCanlendarDate = date;
+            this.$emit('datechanged', date);
+        },
         isLeapMonth: function (year) {
             if (year % 100) { return year % 4 === 0; } else { return year % 400 === 0; }
         },
@@ -95,15 +150,32 @@ Vue.component('bill-canlendar', {
     mounted: function () {
         this.currentDay = this.billDate;
     },
+    watch: {
+        billDate: function () {
+            this.currentDay = this.billDate;
+            if (this.isMonth) {
+                let month = this.billDate.split('-')[1];
+                this.lists = month > 10 ? [month - 9, month - 8, month - 7, month - 6, month - 5, month - 4, month - 3, month - 2, month - 1, month] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            } else {
+                let date = this.billDate.split('-')[2];
+                this.lists = date > 10 ? [date - 9, date - 8, date - 7, date - 6, date - 5, date - 4, date - 3, date - 2, date - 1, date] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            }
+        }
+    },
     computed: {
         title: function () {
             return this.isMonth ? this.currentDay.substring(0, 4) : this.currentDay.substring(0, 7);
         },
         thisMonthOrDate: function () {
+            let date = this.billDate;
+            if (this.hasChangeCanlendar) {
+                date = this.changeCanlendarDate;
+                this.hasChangeCanlendar = false;
+            }
             if (this.isMonth) {
-                return this.title === this.billDate.split('-')[0] ? this.billDate.split('-')[1] : 0;
+                return this.title === date.split('-')[0] ? date.split('-')[1] : 0;
             } else {
-                return this.title === this.billDate.substring(0, 7) ? this.billDate.split('-')[2] : 0;
+                return this.title === date.substring(0, 7) ? date.split('-')[2] : 0;
             }
         }
     }

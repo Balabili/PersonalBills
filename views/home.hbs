@@ -50,9 +50,7 @@
         </div>
 
         <div v-if="tabIndex===2" class="month-bill-content col-md-8 col-md-offset-2">
-            <bill-canlendar :is-month="true" :bill-date="currentDate"></bill-canlendar>
-            <input class="form-control" type="text" name="month" id="month" />
-            <button class="btn btn-primary btn-block" style="margin-top:10px;" v-on:click="findDayBills">查询</button>
+            <bill-canlendar :is-month="true" :bill-date="currentDate" @datechanged="getCurrentMonthBills"></bill-canlendar>
             <ul class="list-group" style="margin-top:10px;">
                 <li class="list-group-item row">
                     <span class="col-md-2">日期</span>
@@ -76,9 +74,7 @@
         </div>
 
         <div v-if="tabIndex===3" class="add-bill-content col-md-8 col-md-offset-2">
-            <bill-canlendar :is-month="false" :bill-date="currentDate"></bill-canlendar>
-            <input class="form-control" type="text" name="date" id="date" />
-            <button class="btn btn-primary btn-block" style="margin-top:10px;" v-on:click="findBillDetails">查询</button>
+            <bill-canlendar :is-month="false" :bill-date="currentDate" @datechanged="getCurrentDayBills"></bill-canlendar>
             <ul class="list-group" style="margin-top:10px;">
                 <li class="list-group-item row">
                     <span class="col-md-1"></span>

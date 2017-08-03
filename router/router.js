@@ -62,6 +62,7 @@ module.exports = (app) => {
                 return res.send(monthBills[i].Daybills);
             }
         }
+        return res.send(null);
     });
     app.get('/home/billDetails/:billDate?', auth.userRequired, (req, res) => {
         let billDate = req.params.billDate ? req.params.billDate : moment().format('YYYY-MM-DD');
