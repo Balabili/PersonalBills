@@ -1,11 +1,15 @@
 const User = require('../model/user.js'),
+    UserService = require('../service/userService.js'),
     auth = require('../middlewares/auth.js'),
     logger = require('../logger/logger.js'),
-    moment = require('moment'),
     crypto = require('../middlewares/crypto.js');
 module.exports = (app) => {
     app.get('/', (req, res) => {
-        res.render('login', { LoginContent: true });
+        if (req.session.user) {
+            res.redirect('/home');
+        } else {
+            res.render('login', { LoginContent: true });
+        }
     });
     app.get('/register', (req, res) => {
         res.render('register', { RegisterContent: true });
@@ -55,50 +59,16 @@ module.exports = (app) => {
         return res.send(monthBills);
     });
     app.post('/home/getMonthBillDetails', async (req, res) => {
-        let currentUser = await User.findUserByName(req.session.user),
-            month = req.body.month, monthBills = currentUser.monthBills;
-        for (let i = 0; i < monthBills.length; i++) {
-            if (monthBills[i].billMonth === month) {
-                return res.send(monthBills[i].Daybills);
-            }
-        }
-        return res.send(null);
-    });
-    app.get('/home/billDetails/:billDate?', auth.userRequired, (req, res) => {
-        let billDate = req.params.billDate ? req.params.billDate : moment().format('YYYY-MM-DD');
-        res.render('home', { HomeContent: true, currentDate: billDate });
+        let currentUser = await User.findUserByName(req.session.user), month = req.body.month;
+        return res.send(UserService.getDayBills(currentUser, month));
     });
     app.post('/home/getBillDetails', async (req, res) => {
-        let date = req.body.date, currentUser = await User.findUserByName(req.session.user),
-            monthBills = currentUser.monthBills;
-        for (let i = 0; i < monthBills.length; i++) {
-            if (monthBills[i].billMonth === date.substring(0, 7)) {
-                let daybills = monthBills[i].Daybills;
-                for (let j = 0; j < daybills.length; j++) {
-                    if (daybills[j].billDate === date) {
-                        return res.send(daybills[j].billDetails);
-                    }
-                }
-                break;
-            }
-        }
-        return res.send(null);
+        let date = req.body.date, currentUser = await User.findUserByName(req.session.user);
+        return res.send(UserService.getBillDetails(currentUser, date));
     });
     app.post('/home/addBill', auth.userRequired, async (req, res) => {
-        let items = req.body.billItems, input = 0, output = 0, data = {}, details = [];
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].isInput === 'true') {
-                input += Number.parseFloat(items[i].acount);
-            } else {
-                output += Number.parseFloat(items[i].acount);
-            }
-            details.push({ item: items[i].item, acount: items[i].acount, isInput: items[i].isInput });
-        }
-        data.name = req.session.user;
-        data.inputAmount = input;
-        data.outputAmount = output;
-        data.billDate = moment().format('YYYY-MM-DD');
-        data.billDetails = details;
+        let items = req.body.billItems, data = {}, user = req.session.user;
+        UserService.addBills(items, data, user);
         await User.changeUserBills(data);
         return res.send(true);
     });

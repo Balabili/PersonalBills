@@ -13,9 +13,7 @@ require(['utility'], function (utility) {
             dayBillItems: [],
             billItems: [],
             currentDate: null,
-            isInput: true,
-            title: '2017年',
-            months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            isInput: true
         },
         mounted: function () {
             this.getItems();
