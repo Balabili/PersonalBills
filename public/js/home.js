@@ -1,7 +1,7 @@
 requirejs.config({
     baseUrl: '/js/common'
 });
-require(['utility', 'canlendar'], function (utility, canlendar) {
+require(['utility'], function (utility) {
     let app = new Vue({
         el: '#home',
         delimiters: ['${', '}'],

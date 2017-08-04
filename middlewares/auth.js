@@ -1,6 +1,6 @@
 function userRequired(req, res, next) {
     if (!req.session || !req.session.user) {
-        return res.render('login', { LoginContent: true });
+        return res.redirect('/');
     }
     next();
 }

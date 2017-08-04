@@ -45,8 +45,8 @@ module.exports = (app) => {
             }
         });
     });
-    app.get('/home', async (req, res) => {
-        res.render('home', { HomeContent: true });
+    app.get('/home', auth.userRequired, async (req, res) => {
+        res.render('home', { HomeContent: true, user: req.session.user });
     });
     app.post('/home/getBillOverviews', async (req, res) => {
         let currentUser = await User.findUserByName(req.session.user),
@@ -84,7 +84,7 @@ module.exports = (app) => {
         }
         return res.send(null);
     });
-    app.post('/home/addBill', async (req, res) => {
+    app.post('/home/addBill', auth.userRequired, async (req, res) => {
         let items = req.body.billItems, input = 0, output = 0, data = {}, details = [];
         for (let i = 0; i < items.length; i++) {
             if (items[i].isInput === 'true') {

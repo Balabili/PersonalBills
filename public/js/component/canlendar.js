@@ -1,11 +1,11 @@
 Vue.component('bill-canlendar', {
     template: `<div class="row">
                 <div v-if="showSelectedForm" class="row">
-                    <div class="form-group col-md-3 col-md-offset-3">
+                    <div v-if="isMonth" class="form-group col-md-6 col-md-offset-3">
                         <input type="number" class="form-control" id="selectYear" @blur="selectYearDone" placeholder="年">
                     </div>
-                    <div v-if="!isMonth" class="form-group col-md-3">
-                        <input type="number" class="form-control" id="selectMonth" @blur="selectMonthDone" placeholder="月">
+                    <div v-if="!isMonth" class="form-group col-md-6 col-md-offset-3">
+                        <input type="month" class="form-control" id="selectMonth" @blur="selectMonthDone" placeholder="月">
                     </div>
                 </div>
                 <b v-else class="col-md-12 bill-canlendar-title" @click="showSelectedFormFun(true)">{{title}}</b>
@@ -40,11 +40,10 @@ Vue.component('bill-canlendar', {
                         clearInterval(timer);
                     }
                 } else {
-                    let yearBox = doc.getElementById('selectYear'), monthBox = doc.getElementById('selectMonth');
+                    let monthBox = doc.getElementById('selectMonth');
                     if (monthBox) {
-                        yearBox.focus();
-                        yearBox.value = self.currentDay.split('-')[0];
-                        monthBox.value = self.currentDay.split('-')[1];
+                        monthBox.value = self.currentDay.substring(0, 7);
+                        monthBox.focus();
                         clearInterval(timer);
                     }
                 }
@@ -52,20 +51,22 @@ Vue.component('bill-canlendar', {
             self.showSelectedForm = isShow;
         },
         selectYearDone: function () {
-            let self = this;
-            if (self.isMonth) {
-                self.showSelectedForm = false;
-                self.currentDay = document.getElementById('selectYear').value.toString();
-            } else {
-                document.getElementById('selectMonth').focus();
-            }
+            this.showSelectedForm = false;
+            this.currentDay = document.getElementById('selectYear').value.toString();
         },
         selectMonthDone: function () {
-            let month = document.getElementById('selectMonth').value;
-            month = month < 10 ? `0${month}` : month;
-            this.currentDay = `${document.getElementById('selectYear').value}-${month}`;
-            this.showSelectedForm = false;
-            this.lists =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            let self = this, monthBox = document.getElementById('selectMonth'), month = monthBox.value;
+            if (month) {
+                self.currentDay = month;
+                if (month.split('-')[1] === '02') {
+                    self.monthDayCounts[1] = self.isLeapMonth(month.split('-')[0]) ? 29 : 28;
+                    self.$set(self, 'monthDayCounts', self.monthDayCounts);
+                }
+                self.showSelectedForm = false;
+            } else {
+                monthBox.focus();
+            }
+            self.lists = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         },
         before: function () {
             if (this.isMonth) {
