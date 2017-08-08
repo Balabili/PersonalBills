@@ -5,7 +5,6 @@ const express = require('express'),
     session = require('express-session'),
     mongoose = require('./lib/mongo.js'),
     MongoStore = require('connect-mongo')(session),
-    cookieparser = require('cookie-parser'),
     handlebars = require('express-handlebars').create({
         extname: 'hbs', defaultLayout: 'main'
     });
@@ -22,6 +21,7 @@ app.use(session({
     })
 }));
 app.use(bodyparser());
+app.use(express.static(__dirname + '/bin'));
 app.use(express.static(__dirname + '/public'));
 
 router(app);
