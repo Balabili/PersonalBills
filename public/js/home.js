@@ -128,10 +128,11 @@ require(['utility'], function (utility) {
                 this.billItems.push(data);
                 app.$set(this, 'billItems', this.billItems);
                 $('#myModal').modal('hide');
-                billItem.value = ''; acount.value = '';
+                billItem.value = '';
+                acount.value = '';
             },
             saveBill: function () {
-                utility.ajax('/home/addBill', 'post', { billItems: this.billItems }).then(function () {
+                utility.ajax('/home/addBill', 'post', { date: this.currentDate, billItems: this.billItems }).then(function () {
                     alert('保存成功');
                 }).fail(function (err) { console.log(err); });
             },

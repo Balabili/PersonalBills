@@ -59,16 +59,17 @@ module.exports = (app) => {
         return res.send(monthBills);
     });
     app.post('/home/getMonthBillDetails', async (req, res) => {
-        let currentUser = await User.findUserByName(req.session.user), month = req.body.month;
-        return res.send(UserService.getDayBills(currentUser, month));
+        let currentUser = await User.findUserByName(req.session.user), month = req.body.month, daybills = UserService.getDayBills(currentUser, month);
+        daybills.sort(function (a, b) { return a.billDate > b.billDate ? 1 : -1; });
+        return res.send(daybills);
     });
     app.post('/home/getBillDetails', async (req, res) => {
         let date = req.body.date, currentUser = await User.findUserByName(req.session.user);
         return res.send(UserService.getBillDetails(currentUser, date));
     });
     app.post('/home/addBill', auth.userRequired, async (req, res) => {
-        let items = req.body.billItems, data = {}, user = req.session.user;
-        UserService.addBills(items, data, user);
+        let items = req.body.billItems ? req.body.billItems : [], data = { billDate: req.body.date, name: req.session.user };
+        UserService.addBills(items, data);
         await User.changeUserBills(data);
         return res.send(true);
     });

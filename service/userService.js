@@ -26,7 +26,7 @@ function changeUserBills(res, data) {
     }
 }
 
-function addBills(items, data, user) {
+function addBills(items, data) {
     let input = 0, output = 0, details = [];
     for (let i = 0; i < items.length; i++) {
         if (items[i].isInput === 'true') {
@@ -36,10 +36,8 @@ function addBills(items, data, user) {
         }
         details.push({ item: items[i].item, acount: items[i].acount, isInput: items[i].isInput });
     }
-    data.name = user;
     data.inputAmount = input;
     data.outputAmount = output;
-    data.billDate = moment().format('YYYY-MM-DD');
     data.billDetails = details;
 }
 
