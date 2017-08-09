@@ -12,14 +12,14 @@ let app = new Vue({
         currentDate: null,
         isInput: true
     },
-    mounted: function () {
+    mounted() {
         this.getItems();
     },
     methods: {
-        getItems: function () {
+        getItems() {
             this.getMonthBills();
         },
-        changeTab: function (index) {
+        changeTab(index) {
             this.tabIndex = index;
             switch (index) {
                 case 1:
@@ -35,82 +35,78 @@ let app = new Vue({
                     break;
             }
         },
-        getMonthBills: function () {
-            let self = this;
-            utility.ajax('/home/getBillOverviews', 'post', {}).then(function (result) {
-                if (result.length) {
-                    let monthBillItems = [];
-                    for (let i = 0; i < result.length; i++) {
-                        let monthItem = {}, items = result[i].Daybills, inputAmount = 0, outputAmount = 0;
-                        monthItem.billMonth = result[i].billMonth;
-                        for (let j = 0; j < items.length; j++) {
-                            inputAmount += items[j].inputAmount;
-                            outputAmount += items[j].outputAmount;
-                        }
-                        monthItem.inputAmount = inputAmount;
-                        monthItem.outputAmount = outputAmount;
-                        monthItem.overviewAmount = inputAmount - outputAmount;
-                        monthBillItems.push(monthItem);
+        getMonthBills: async () => {
+            let self = this, result = await utility.ajax('/home/getBillOverviews', 'post', {});
+            if (result.length) {
+                let monthBillItems = [];
+                for (let i = 0; i < result.length; i++) {
+                    let monthItem = {}, items = result[i].Daybills, inputAmount = 0, outputAmount = 0;
+                    monthItem.billMonth = result[i].billMonth;
+                    for (let j = 0; j < items.length; j++) {
+                        inputAmount += items[j].inputAmount;
+                        outputAmount += items[j].outputAmount;
                     }
-                    app.$set(self, 'monthBillItems', monthBillItems);
+                    monthItem.inputAmount = inputAmount;
+                    monthItem.outputAmount = outputAmount;
+                    monthItem.overviewAmount = inputAmount - outputAmount;
+                    monthBillItems.push(monthItem);
                 }
-            });
+                app.$set(self, 'monthBillItems', monthBillItems);
+            }
         },
-        getMonthDetail: function (month) {
-            let self = this;
+        getMonthDetail: async (month) => {
+            let self = this, result = null;
             self.tabIndex = 2;
             self.currentDate = month;
             $('#monthDetails').tab('show');
-            utility.ajax('/home/getMonthBillDetails', 'post', { month: month }).then(function (result) {
-                if (result && result.length) {
-                    for (let i = 0; i < result.length; i++) {
-                        result[i].overviewAmount = result[i].inputAmount - result[i].outputAmount;
-                    }
-                    self.dayBillItems = result;
-                    app.$set(self, 'dayBillItems', self.dayBillItems);
-                } else {
-                    self.dayBillItems = [];
+            result = await utility.ajax('/home/getMonthBillDetails', 'post', { month: month });
+            if (result && result.length) {
+                for (let i = 0; i < result.length; i++) {
+                    result[i].overviewAmount = result[i].inputAmount - result[i].outputAmount;
                 }
-            }).fail(function (err) { console.log(err); });
+                self.dayBillItems = result;
+                app.$set(self, 'dayBillItems', self.dayBillItems);
+            } else {
+                self.dayBillItems = [];
+            }
         },
-        getDayBillDetails: function (date) {
-            let self = this;
+        getDayBillDetails: async (date) => {
+            let self = this, result = null;
             self.tabIndex = 3;
             self.currentDate = date;
             $('#dateDetails').tab('show');
-            utility.ajax('/home/getBillDetails', 'post', { date: date }).then(function (result) {
-                if (result && result.length) {
-                    for (let i = 0; i < result.length; i++) {
-                        result[i].text = result[i].isInput ? '收入' : '支出';
-                    }
-                    self.billItems = result;
-                } else {
-                    self.billItems = [];
+            result = await utility.ajax('/home/getBillDetails', 'post', { date: date });
+            if (result && result.length) {
+                for (let i = 0; i < result.length; i++) {
+                    result[i].text = result[i].isInput ? '收入' : '支出';
                 }
-            }).fail(function (err) { console.log(err); });
+                self.billItems = result;
+            } else {
+                self.billItems = [];
+            }
         },
-        viewMonthBillDetails: function (e) {
+        viewMonthBillDetails(e) {
             e.stopPropagation();
             let month = e.target.id;
             this.getMonthDetail(month);
         },
-        viewDayBillDetails: function (e) {
+        viewDayBillDetails(e) {
             e.stopPropagation();
             let date = e.target.id;
             this.getDayBillDetails(date);
         },
-        getCurrentMonthBills: function (thisMonth) {
+        getCurrentMonthBills(thisMonth) {
             this.getMonthDetail(thisMonth);
         },
-        getCurrentDayBills: function (thisDate) {
+        getCurrentDayBills(thisDate) {
             this.getDayBillDetails(thisDate);
         },
-        addBill: function (isInput) {
+        addBill(isInput) {
             this.isInput = isInput;
             this.modalTitle = isInput ? '收入' : '支出';
             $('#myModal').modal('show');
         },
-        saveItem: function () {
+        saveItem() {
             let billItem = document.getElementById('billItem'), acount = document.getElementById('acount'),
                 data = {};
             if (!/^\d+(\.\d+)?$/.test(acount.value)) {
@@ -128,12 +124,11 @@ let app = new Vue({
             billItem.value = '';
             acount.value = '';
         },
-        saveBill: function () {
-            utility.ajax('/home/addBill', 'post', { date: this.currentDate, billItems: this.billItems }).then(function () {
-                alert('保存成功');
-            }).fail(function (err) { console.log(err); });
+        saveBill: async () => {
+            let result = await utility.ajax('/home/addBill', 'post', { date: this.currentDate, billItems: this.billItems });
+            alert('保存成功');
         },
-        editBillItem: function (e) {
+        editBillItem(e) {
             e.stopPropagation();
             let itemId = e.target.parentNode.id, billItems = this.billItems;
             for (let i = 0; i < billItems.length; i++) {
@@ -146,7 +141,7 @@ let app = new Vue({
                 }
             }
         },
-        deleteBillItem: function (e) {
+        deleteBillItem(e) {
             e.stopPropagation();
             if (confirm('你确定要删除当前记录？')) {
                 let itemId = e.target.parentNode.id, billItems = this.billItems;
@@ -158,18 +153,18 @@ let app = new Vue({
                 }
             }
         },
-        logout: function () {
+        logout() {
             window.location.href = '/logout';
         }
     },
     watch: {
-        monthBillItems: function () {
+        monthBillItems() {
             this.showNoItemMsg = this.monthBillItems.length === 0;
         },
-        dayBillItems: function () {
+        dayBillItems() {
             this.showNoItemMsg = this.dayBillItems.length === 0;
         },
-        billItems: function () {
+        billItems() {
             this.showNoItemMsg = this.billItems.length === 0;
         }
     }

@@ -8,10 +8,10 @@ let app = new Vue({
         registerSuccess: ''
     },
     methods: {
-        register: function () {
+        register: async () => {
             let username = document.getElementById('username').value, password = utility.strHelper.trim(document.getElementById('password').value),
                 passwordAgain = document.getElementById('passwordAgain'), email = utility.strHelper.trim(document.getElementById('email').value),
-                data = {}, self = this;
+                data = {}, self = this, registerCallBack = null;
             self.validationFailedMsg = '';
             if (!(/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(username)) || username.length < 6 || username.length > 12) {
                 self.validationFailedMsg = '用户名不合法';
@@ -33,15 +33,14 @@ let app = new Vue({
                 return;
             }
             data = { username: username, password: password, email: email };
-            utility.ajax('/register', 'post', data).then(function (result) {
-                if (result) {
-                    self.validationFailedMsg = '';
-                    self.registerSuccess = '注册成功';
-                } else {
-                    self.validationFailedMsg = '用户名已经存在';
-                    document.getElementById('username').focus();
-                }
-            }).fail(function (err) { console.log(err); });
+            registerCallBack = await utility.ajax('/register', 'post', data);
+            if (registerCallBack) {
+                self.validationFailedMsg = '';
+                self.registerSuccess = '注册成功';
+            } else {
+                self.validationFailedMsg = '用户名已经存在';
+                document.getElementById('username').focus();
+            }
         }
     }
 });

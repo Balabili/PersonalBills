@@ -5,13 +5,10 @@ let app = new Vue({
     data: {
         errorMessage: ''
     },
-    created: function () {
-
-    },
     methods: {
-        login: function () {
+        login: async () => {
             let username = document.getElementById('username').value, password = document.getElementById('password').value,
-                rememberMe = document.getElementById('rememberMe').checked, self = this, data = {};
+                rememberMe = document.getElementById('rememberMe').checked, self = this, data = {}, loginCallBack = null;
             if (utility.strHelper.trim(username) === '') {
                 self.errorMessage = '用户名不能为空';
                 document.getElementById('username').focus();
@@ -23,15 +20,14 @@ let app = new Vue({
                 return;
             }
             data = { username: username, password: password, rememberMe: rememberMe };
-            utility.ajax('/login', 'post', data).then(function (result) {
-                if (result) {
-                    self.errorMessage = result;
-                } else {
-                    window.location.href = '/home';
-                }
-            }).fail(function (err) { console.log(err); });
+            loginCallBack = await utility.ajax('/login', 'post', data);
+            if (loginCallBack) {
+                self.errorMessage = loginCallBack;
+            } else {
+                window.location.href = '/home';
+            }
         },
-        register: function () {
+        register() {
             window.open('/register');
         }
     }

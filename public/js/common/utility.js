@@ -1,25 +1,27 @@
 'user strict';
 
-let ajax = function (actionUrl, type, data) {
-    let dtd = $.Deferred();
-    $.ajax({
-        url: actionUrl,
-        type: type,
-        data: data,
-        success: function (result) {
-            dtd.resolve(result);
-        },
-        error: function (error) {
-            dtd.reject(error);
-        }
+let ajax = (actionUrl, type, data) => {
+    return new Promise(function (resolve, reject) {
+        let ajaxSetting = {
+            url: actionUrl,
+            type: type,
+            data: data,
+            success: function (result) {
+                resolve(result);
+            },
+            error: function (error) {
+                console.log(error);
+                reject(error);
+            }
+        };
+        $.ajax(ajaxSetting);
     });
-    return dtd.promise();
 },
     strHelper = {},
     dateHelper = {};
 
 // -----------------strHelper-----------------
-strHelper.trim = function (str) {
+strHelper.trim = (str) => {
     return str.replace(/(^\s*)|(\s*$)/g, '');
 };
 
@@ -28,12 +30,12 @@ function completionNumber(number) {
     return number < 10 ? '0' + number : number;
 }
 
-dateHelper.formatDate = function (date) {
+dateHelper.formatDate = (date) => {
     let year = date.getFullYear(), month = completionNumber(date.getMonth() + 1), day = completionNumber(date.getDate());
     return `${year}-${month}-${day}`;
 };
 
-dateHelper.formatMonth = function (date) {
+dateHelper.formatMonth = (date) => {
     let year = date.getFullYear(), month = completionNumber(date.getMonth() + 1);
     return `${year}-${month}`;
 };

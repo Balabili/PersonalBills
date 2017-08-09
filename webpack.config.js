@@ -7,7 +7,7 @@ let webpack = require('webpack'),
 module.exports = {
     //页面入口文件配置
     entry: {
-        'home': './public/js/home.js',
+        'home': ['./public/js/home.js', './public/js/component/canlendar.js'],
         'login': './public/js/login.js',
         'register': './public/js/register.js'
     },
@@ -18,7 +18,7 @@ module.exports = {
     },
     module: {
         //加载器配置
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 loaders: ['babel?presets[]=es2015,presets[]=stage-3'],
@@ -31,6 +31,9 @@ module.exports = {
     },
     //插件项
     plugins: [
-
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'home',
+            children: true
+        })
     ]
 };

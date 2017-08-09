@@ -21,8 +21,8 @@ app.use(session({
     })
 }));
 app.use(bodyparser());
-app.use(express.static(__dirname + '/bin'));
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/bin', { maxAge: 1000 * 60 * 60 * 24 * 365 }), );
+app.use(express.static(__dirname + '/public', { maxAge: 1000 * 60 * 60 * 24 * 365 }));
 
 router(app);
 
