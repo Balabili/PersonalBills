@@ -6,7 +6,7 @@ let app = new Vue({
         errorMessage: ''
     },
     methods: {
-        login: async () => {
+        async login() {
             let username = document.getElementById('username').value, password = document.getElementById('password').value,
                 rememberMe = document.getElementById('rememberMe').checked, self = this, data = {}, loginCallBack = null;
             if (utility.strHelper.trim(username) === '') {

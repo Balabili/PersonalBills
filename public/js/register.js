@@ -8,7 +8,7 @@ let app = new Vue({
         registerSuccess: ''
     },
     methods: {
-        register: async () => {
+        async register() {
             let username = document.getElementById('username').value, password = utility.strHelper.trim(document.getElementById('password').value),
                 passwordAgain = document.getElementById('passwordAgain'), email = utility.strHelper.trim(document.getElementById('email').value),
                 data = {}, self = this, registerCallBack = null;
@@ -20,7 +20,7 @@ let app = new Vue({
             }
             if (password === '' || password.length < 6 || password.length > 12) {
                 self.validationFailedMsg = '密码不合法';
-                password.focus();
+                document.getElementById('password').focus();
                 return;
             } else if (password !== passwordAgain.value) {
                 self.validationFailedMsg = '两次输入的密码不一致';

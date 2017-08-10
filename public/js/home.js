@@ -35,7 +35,7 @@ let app = new Vue({
                     break;
             }
         },
-        getMonthBills: async () => {
+        async getMonthBills() {
             let self = this, result = await utility.ajax('/home/getBillOverviews', 'post', {});
             if (result.length) {
                 let monthBillItems = [];
@@ -54,7 +54,7 @@ let app = new Vue({
                 app.$set(self, 'monthBillItems', monthBillItems);
             }
         },
-        getMonthDetail: async (month) => {
+        async getMonthDetail(month) {
             let self = this, result = null;
             self.tabIndex = 2;
             self.currentDate = month;
@@ -70,7 +70,7 @@ let app = new Vue({
                 self.dayBillItems = [];
             }
         },
-        getDayBillDetails: async (date) => {
+        async getDayBillDetails(date) {
             let self = this, result = null;
             self.tabIndex = 3;
             self.currentDate = date;
@@ -124,7 +124,7 @@ let app = new Vue({
             billItem.value = '';
             acount.value = '';
         },
-        saveBill: async () => {
+        async saveBill() {
             let result = await utility.ajax('/home/addBill', 'post', { date: this.currentDate, billItems: this.billItems });
             alert('保存成功');
         },
