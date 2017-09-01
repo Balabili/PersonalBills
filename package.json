@@ -41,6 +41,6 @@
     "babel-preset-stage-3": "^6.24.1",
     "eslint": "^4.3.0",
     "expose-loader": "^0.7.3",
-    "webpack": "^3.4.1"
+    "webpack": "^3.5.5"
   }
 }

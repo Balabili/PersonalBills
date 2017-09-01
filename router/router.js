@@ -60,7 +60,9 @@ module.exports = (app) => {
     });
     app.post('/home/getMonthBillDetails', async (req, res) => {
         let currentUser = await User.findUserByName(req.session.user), month = req.body.month, daybills = UserService.getDayBills(currentUser, month);
-        daybills.sort(function (a, b) { return a.billDate > b.billDate ? 1 : -1; });
+        if (daybills) {
+            daybills.sort(function (a, b) { return a.billDate > b.billDate ? 1 : -1; });
+        }
         return res.send(daybills);
     });
     app.post('/home/getBillDetails', async (req, res) => {
